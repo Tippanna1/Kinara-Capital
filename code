@@ -1,15 +1,29 @@
 from flask import Flask, request, jsonify
+import string
+import random
 
 app = Flask(__name__)
 
+# Generate random student data for demonstration
+def generate_random_students(num_students):
+    students = []
+    for i in range(1, num_students + 1):
+        student = {
+            "id": i,
+            "name": generate_random_name(),
+            "total_marks": random.randint(60, 100)
+        }
+        students.append(student)
+    return students
+
+# Generate random student name
+def generate_random_name():
+    name_length = random.randint(5, 10)
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(name_length))
+
 # Assuming student data is stored in a list of dictionaries
-students = [
-    {"id": 1, "name": "John", "total_marks": 85},
-    {"id": 2, "name": "Jane", "total_marks": 90},
-    {"id": 3, "name": "Mike", "total_marks": 75},
-    {"id": 4, "name": "Sarah", "total_marks": 95},
-    # Add more student data here
-]
+students = generate_random_students(100)
 
 @app.route('/students', methods=['GET'])
 def get_students():
