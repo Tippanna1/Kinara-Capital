@@ -1,0 +1,51 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+# Assuming student data is stored in a list of dictionaries
+students = [
+    {"id": 1, "name": "John", "total_marks": 85},
+    {"id": 2, "name": "Jane", "total_marks": 90},
+    {"id": 3, "name": "Mike", "total_marks": 75},
+    {"id": 4, "name": "Sarah", "total_marks": 95},
+    # Add more student data here
+]
+
+@app.route('/students', methods=['GET'])
+def get_students():
+    # Get pagination parameters from query string
+    page = int(request.args.get('page', 1))
+    page_size = int(request.args.get('page_size', 10))
+    
+    # Calculate start and end indexes for pagination
+    start_index = (page - 1) * page_size
+    end_index = start_index + page_size
+    
+    # Get filtered students based on query parameters
+    filtered_students = filter_students(request.args)
+    
+    # Apply pagination to filtered students
+    paginated_students = filtered_students[start_index:end_index]
+    
+    return jsonify(paginated_students)
+
+def filter_students(filters):
+    # Perform server-side filtering based on filter criteria
+    filtered_students = students
+    
+    if 'id' in filters:
+        id_filter = int(filters['id'])
+        filtered_students = [student for student in filtered_students if student['id'] == id_filter]
+    
+    if 'name' in filters:
+        name_filter = filters['name']
+        filtered_students = [student for student in filtered_students if student['name'] == name_filter]
+    
+    if 'total_marks' in filters:
+        total_marks_filter = int(filters['total_marks'])
+        filtered_students = [student for student in filtered_students if student['total_marks'] == total_marks_filter]
+    
+    return filtered_students
+
+if __name__ == '__main__':
+    app.run()
